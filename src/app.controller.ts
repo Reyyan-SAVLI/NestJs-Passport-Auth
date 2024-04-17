@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { AppService } from './app.service';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth/auth.service';
@@ -18,6 +18,26 @@ export class AppController {
   @Get('test')
   async data(){
        return 'success';
+  }
+
+  @UseGuards(AuthGuard('google'))
+  @Get('google')  
+  async googleLogin(){
+
+  }
+
+  @UseGuards(AuthGuard('google'))
+  @Get('auth/google/callback')  
+  async callback(@Req() req, @Res() res){
+    const jwt = await this.authService.login(req.user);
+    res.set('authorization', jwt.access_token);
+    return res.json(req.user);
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Get('test1')
+  async test1(@Res() res){
+    return res.json('success');
   }
 
   @Get()
